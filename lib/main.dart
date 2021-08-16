@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
-import './transactions.dart';
+import 'package:personal_expenses_app/widgets/new_transactions.dart';
+import 'models/transactions.dart';
+import 'widgets/transaction_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -49,21 +51,61 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transactions> trans = [
+  final List<Transactions> _trans = [
     Transactions('t1', 'Food', 15.0, DateTime.now()),
     Transactions('t2', 'Grocery', 20.0, DateTime.now()),
     Transactions('t2', 'Take-out', 32.3, DateTime.now()),
   ];
 
+  void _addNewTrans(String transTitle, double transAmount) {
+    final newTrans = Transactions(
+        DateTime.now().toString(), transTitle, transAmount, DateTime.now());
+
+    setState(() {
+      _trans.add(newTrans);
+    });
+  }
+
+  //the function used to floatButton add on pressed
+  void _startAddNewTrans(BuildContext context) {
+    //built-in function by flutter, a new window which doesn't interact with
+    //the original screen, create a new small screen
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return GestureDetector(
+          child: NewTransaction(_addNewTrans),
+          //these two methods are used to avoid tap the blank at the new screen
+          //to close, HitTestBehavior is used to catch all taps and do nothing
+          onTap: () {},
+          behavior: HitTestBehavior.opaque,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+          'Expenses chart',
+          textAlign: TextAlign.right,
+        ),
+        actions: [
+          IconButton(
+              onPressed: () => _startAddNewTrans(context),
+              icon: Icon(Icons.add)),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      //used to change the float button location
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _startAddNewTrans(context),
+      ),
+      body: SingleChildScrollView(
+        // Single scroll view fixes the out of screen bound error
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -76,50 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               elevation: 1.0,
             ),
-            Column(
-              children: trans.map((tt) {
-                return Card(
-                  //card setting
-                  child: Row(
-                    children: [
-                      //amount setting
-                      Container(
-                        child: Text(
-                          //${} automatically transfer variable into string
-                          '\$${tt.amount}',
-                          style: TextStyle(
-                              fontSize: 30.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.purple),
-                        ),
-                        margin: EdgeInsets.symmetric(
-                            vertical: 5.0, horizontal: 20.0),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.purple, width: 1.0),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.5, horizontal: 3.0),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        //title and date setting
-                        children: [
-                          Text(
-                            tt.title,
-                            style: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            DateFormat.yMMMMEEEEd().format(tt.date),
-                            style: TextStyle(color: Colors.black54),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
+            TransactionList(_trans),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
