@@ -13,14 +13,14 @@ class UserTransactions extends StatefulWidget {
 
 class _UserTransactionsState extends State<UserTransactions> {
   final List<Transactions> _trans = [
-    Transactions('t1', 'Food', 15.0, DateTime.now()),
-    Transactions('t2', 'Grocery', 20.0, DateTime.now()),
-    Transactions('t2', 'Take-out', 32.3, DateTime.now()),
+    Transactions(0, 'Food', 15.0, DateTime.now()),
+    Transactions(1, 'Grocery', 20.0, DateTime.now()),
+    Transactions(2, 'Take-out', 32.3, DateTime.now()),
   ];
 
   void _addNewTrans(String transTitle, double transAmount) {
     final newTrans = Transactions(
-        DateTime.now().toString(), transTitle, transAmount, DateTime.now());
+        _trans.length, transTitle, transAmount, DateTime.now());
 
     setState(() {
       _trans.add(newTrans);
@@ -32,7 +32,7 @@ class _UserTransactionsState extends State<UserTransactions> {
     return Column(
       children: [
         NewTransaction(_addNewTrans),
-        TransactionList(_trans),
+        TransactionList(_trans, _addNewTrans),
       ],
     );
   }

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_expenses_app/widgets/new_transactions.dart';
-import 'models/transactions.dart';
-import 'widgets/transaction_list.dart';
+import 'package:personal_expenses_app/models/transactions.dart';
+import 'package:personal_expenses_app/widgets/transaction_list.dart';
+import 'package:personal_expenses_app/widgets/chart.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
+        // This is the theme of your application. Set up global theme
         //
         // Try running your application with "flutter run". You'll see the
         // application has a blue toolbar. Then, without quitting the app, try
@@ -25,7 +25,29 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
+        accentColor: Color.fromRGBO(0, 39, 76, 1),
+        fontFamily: 'Quicksand',
+        textTheme: ThemeData.light().textTheme.copyWith(
+              title: TextStyle(
+                fontSize: 20,
+                color: Color.fromRGBO(0, 39, 76, 1),
+              ),
+            ),
+        //light means the default setting
+        appBarTheme: AppBarTheme(
+          color: Color.fromRGBO(0, 39, 76, 1),
+          textTheme: ThemeData.light().textTheme.copyWith(
+                title: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(255, 203, 5, 1),
+                ),
+              ),
+          iconTheme: ThemeData.light().iconTheme.copyWith(
+            color: Color.fromRGBO(255, 203, 5, 1),
+          ),
+        ),
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -52,20 +74,41 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transactions> _trans = [
-    Transactions('t1', 'Food', 15.0, DateTime.now()),
-    Transactions('t2', 'Grocery', 20.0, DateTime.now()),
-    Transactions('t2', 'Take-out', 32.3, DateTime.now()),
+    // Transactions('t1', 'Foodfghjhgghjghdfewrwerwghjhj', 156776.0, DateTime.now()),
+    // Transactions(0, 'Restaurant', 31.32, DateTime.now()),
+    // Transactions(1, 'Kroger', 25.63, DateTime.now()),
+    // Transactions(2, 'Pet Supplies', 28.60, DateTime.now()),
+    // Transactions(3, 'Costco', 109.2, DateTime.now()),
+    // Transactions(5, 'Take-out', 32.3, DateTime.now()),
   ];
 
-  void _addNewTrans(String transTitle, double transAmount) {
+  //only returns the recent 7 days trans to chart
+  List<Transactions> get _recentTrans {
+    return _trans.where((tx) {
+      return tx.date.isAfter(
+        DateTime.now().subtract(
+          Duration(days: 7),
+        ),
+      );
+    }).toList();
+  }
+
+  void _addNewTrans(String transTitle, double transAmount, DateTime chosenDate) {
     final newTrans = Transactions(
-        DateTime.now().toString(), transTitle, transAmount, DateTime.now());
+        _trans.length, transTitle, transAmount, chosenDate);
 
     setState(() {
       _trans.add(newTrans);
     });
   }
 
+  void _removeTrans(int id) {
+    setState(() {
+      _trans.removeWhere((element) {
+        return element.id == id;
+      });
+    });
+  }
   //the function used to floatButton add on pressed
   void _startAddNewTrans(BuildContext context) {
     //built-in function by flutter, a new window which doesn't interact with
@@ -89,19 +132,22 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Expenses chart',
+          'Personal Expenses',
           textAlign: TextAlign.right,
+          style: TextStyle(
+            fontFamily: 'OpenSans',
+          ),
         ),
         actions: [
           IconButton(
               onPressed: () => _startAddNewTrans(context),
-              icon: Icon(Icons.add)),
+              icon: Icon(Icons.add, size: 28.0, )),
         ],
       ),
       //used to change the float button location
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Color.fromRGBO(255, 203, 5, 1), size: 30,),
         onPressed: () => _startAddNewTrans(context),
       ),
       body: SingleChildScrollView(
@@ -109,16 +155,17 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Card(
-              child: Container(
-                margin: EdgeInsets.all(10.0),
-                width: double.infinity,
-                alignment: Alignment.center,
-                child: Text('Chart'),
-              ),
-              elevation: 1.0,
-            ),
-            TransactionList(_trans),
+            Chart(_recentTrans),
+            // Card(
+            //   child: Container(
+            //     margin: EdgeInsets.all(10.0),
+            //     width: double.infinity,
+            //     alignment: Alignment.center,
+            //     child: Text('Chart'),
+            //   ),
+            //   elevation: 1.0,
+            // ),
+            TransactionList(_trans, _removeTrans),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
