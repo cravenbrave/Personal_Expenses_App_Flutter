@@ -25,11 +25,9 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.amber,
-        accentColor: Color.fromRGBO(0, 39, 76, 1),
         fontFamily: 'Quicksand',
         textTheme: ThemeData.light().textTheme.copyWith(
-              title: TextStyle(
+              subtitle1: TextStyle(
                 fontSize: 20,
                 color: Color.fromRGBO(0, 39, 76, 1),
               ),
@@ -38,7 +36,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: AppBarTheme(
           color: Color.fromRGBO(0, 39, 76, 1),
           textTheme: ThemeData.light().textTheme.copyWith(
-                title: TextStyle(
+                subtitle1: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: Color.fromRGBO(255, 203, 5, 1),
@@ -47,7 +45,7 @@ class MyApp extends StatelessWidget {
           iconTheme: ThemeData.light().iconTheme.copyWith(
             color: Color.fromRGBO(255, 203, 5, 1),
           ),
-        ),
+        ), colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber).copyWith(secondary: Color.fromRGBO(0, 39, 76, 1)),
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );

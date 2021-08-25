@@ -68,7 +68,7 @@ class _NewTransactionState extends State<NewTransaction> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             TextField(
-              style: Theme.of(context).textTheme.title,
+              style: Theme.of(context).textTheme.subtitle1,
               decoration: InputDecoration(
                 labelText: 'Title:',
               ),
@@ -81,7 +81,7 @@ class _NewTransactionState extends State<NewTransaction> {
               // },
             ),
             TextField(
-              style: Theme.of(context).textTheme.title,
+              style: Theme.of(context).textTheme.subtitle1,
               decoration: InputDecoration(
                 labelText: 'Amount:',
               ),
