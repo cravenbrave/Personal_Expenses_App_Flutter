@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:personal_expenses_app/widgets/new_transactions.dart';
 import 'package:personal_expenses_app/models/transactions.dart';
 import 'package:personal_expenses_app/widgets/transaction_list.dart';
@@ -13,18 +14,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    //limit the screen rotation function. Need to import services.dart
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+
+    ]);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application. Set up global theme
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         fontFamily: 'Quicksand',
         textTheme: ThemeData.light().textTheme.copyWith(
               subtitle1: TextStyle(
@@ -43,9 +42,11 @@ class MyApp extends StatelessWidget {
                 ),
               ),
           iconTheme: ThemeData.light().iconTheme.copyWith(
-            color: Color.fromRGBO(255, 203, 5, 1),
-          ),
-        ), colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber).copyWith(secondary: Color.fromRGBO(0, 39, 76, 1)),
+                color: Color.fromRGBO(255, 203, 5, 1),
+              ),
+        ),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber)
+            .copyWith(secondary: Color.fromRGBO(0, 39, 76, 1)),
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -72,7 +73,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transactions> _trans = [
-    // Transactions('t1', 'Foodfghjhgghjghdfewrwerwghjhj', 156776.0, DateTime.now()),
+    // Transactions(6, 'Foodfghjhgghjghdfewrwerwghjhj', 156776.0, DateTime.now()),
     // Transactions(0, 'Restaurant', 31.32, DateTime.now()),
     // Transactions(1, 'Kroger', 25.63, DateTime.now()),
     // Transactions(2, 'Pet Supplies', 28.60, DateTime.now()),
@@ -91,9 +92,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTrans(String transTitle, double transAmount, DateTime chosenDate) {
-    final newTrans = Transactions(
-        _trans.length, transTitle, transAmount, chosenDate);
+  void _addNewTrans(
+      String transTitle, double transAmount, DateTime chosenDate) {
+    final newTrans =
+        Transactions(_trans.length, transTitle, transAmount, chosenDate);
 
     setState(() {
       _trans.add(newTrans);
@@ -107,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
   }
+
   //the function used to floatButton add on pressed
   void _startAddNewTrans(BuildContext context) {
     //built-in function by flutter, a new window which doesn't interact with
@@ -127,25 +130,36 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Personal Expenses',
-          textAlign: TextAlign.right,
-          style: TextStyle(
-            fontFamily: 'OpenSans',
-          ),
+    final appBar = AppBar(
+      title: Text(
+        'Personal Expenses',
+        textAlign: TextAlign.right,
+        style: TextStyle(
+          fontFamily: 'OpenSans',
+          color: Color.fromRGBO(255, 203, 5, 1),
+          fontWeight: FontWeight.bold,
+          fontSize: 26.0,
         ),
-        actions: [
-          IconButton(
-              onPressed: () => _startAddNewTrans(context),
-              icon: Icon(Icons.add, size: 28.0, )),
-        ],
       ),
+      actions: [
+        IconButton(
+            onPressed: () => _startAddNewTrans(context),
+            icon: Icon(
+              Icons.add,
+              size: 28.0,
+            )),
+      ],
+    );
+    return Scaffold(
+      appBar: appBar,
       //used to change the float button location
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add, color: Color.fromRGBO(255, 203, 5, 1), size: 30,),
+        child: Icon(
+          Icons.add,
+          color: Color.fromRGBO(255, 203, 5, 1),
+          size: 30,
+        ),
         onPressed: () => _startAddNewTrans(context),
       ),
       body: SingleChildScrollView(
@@ -153,7 +167,16 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Chart(_recentTrans),
+            Container(
+                //mediaQuery get the device info, size etc, we get the device height
+                //and then rule this container uses 0.6 of the height of the screen
+                //appBar preferredSize is the height of the appBar
+                //also minus padding size (more likely designed for android?
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.21,
+                child: Chart(_recentTrans)),
             // Card(
             //   child: Container(
             //     margin: EdgeInsets.all(10.0),
@@ -163,7 +186,12 @@ class _MyHomePageState extends State<MyHomePage> {
             //   ),
             //   elevation: 1.0,
             // ),
-            TransactionList(_trans, _removeTrans),
+            Container(
+                child: TransactionList(_trans, _removeTrans),
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.79),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
