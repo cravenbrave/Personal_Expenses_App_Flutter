@@ -60,100 +60,103 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      child: Container(
-        padding: EdgeInsets.all(10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            TextField(
-              style: Theme.of(context).textTheme.subtitle1,
-              decoration: InputDecoration(
-                labelText: 'Title:',
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 4.0,
+        child: Container(
+          padding: EdgeInsets.only(left: 10, top: 10, right: 10, bottom: MediaQuery.of(context).viewInsets.bottom + 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              TextField(
+                style: Theme.of(context).textTheme.subtitle1,
+                decoration: InputDecoration(
+                  labelText: 'Title:',
+                ),
+                controller: _titleController,
+                onSubmitted: (_) => _submitDate,
+                // //once the text field is changed, it passes the value(string)
+                // //to a function
+                // onChanged: (value) {
+                //   inputTitle = value;
+                // },
               ),
-              controller: _titleController,
-              onSubmitted: (_) => _submitDate,
-              // //once the text field is changed, it passes the value(string)
-              // //to a function
-              // onChanged: (value) {
-              //   inputTitle = value;
-              // },
-            ),
-            TextField(
-              style: Theme.of(context).textTheme.subtitle1,
-              decoration: InputDecoration(
-                labelText: 'Amount:',
+              TextField(
+                style: Theme.of(context).textTheme.subtitle1,
+                decoration: InputDecoration(
+                  labelText: 'Amount:',
+                ),
+                controller: _amountController,
+                //enable the keyboard to type decimal
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                onSubmitted: (_) => _submitDate,
               ),
-              controller: _amountController,
-              //enable the keyboard to type decimal
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              onSubmitted: (_) => _submitDate,
-            ),
-            Container(
-              height: 70,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Date: ',
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 20.0,
-                      fontFamily: 'Quicksand',
-                    ),
-                  ),
-                  _selectedDate == DateTime.utc(2000)
-                      ? Text(
-                          'No date selected',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromRGBO(0, 39, 76, 1),
-                            fontSize: 20.0,
-                            fontFamily: 'Quicksand',
-                          ),
-                        )
-                      : Text(
-                          DateFormat.yMMMMEEEEd().format(_selectedDate),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromRGBO(0, 39, 76, 1),
-                            fontSize: 20.0,
-                            fontFamily: 'Quicksand',
-                          ),
-                        ),
-                  Expanded(
-                    child: SizedBox(),
-                  ),
-                  ElevatedButton(
-                    onPressed: _datePicker,
-                    child: Text(
-                      'Add',
+              Container(
+                height: 70,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Date: ',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromRGBO(0, 39, 76, 1),
-                        fontSize: 18.0,
+                        color: Colors.grey[700],
+                        fontSize: 20.0,
                         fontFamily: 'Quicksand',
                       ),
                     ),
-                  )
-                ],
+                    _selectedDate == DateTime.utc(2000)
+                        ? Text(
+                            'No date selected',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(0, 39, 76, 1),
+                              fontSize: 20.0,
+                              fontFamily: 'Quicksand',
+                            ),
+                          )
+                        : Text(
+                            DateFormat.yMMMMEEEEd().format(_selectedDate),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(0, 39, 76, 1),
+                              fontSize: 20.0,
+                              fontFamily: 'Quicksand',
+                            ),
+                          ),
+                    Expanded(
+                      child: SizedBox(),
+                    ),
+                    ElevatedButton(
+                      onPressed: _datePicker,
+                      child: Text(
+                        'Add',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromRGBO(0, 39, 76, 1),
+                          fontSize: 18.0,
+                          fontFamily: 'Quicksand',
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            Divider(
-              color: Colors.black,
-            ),
-            ElevatedButton(
-              onPressed: _submitDate,
-              child: Text(
-                'Add transaction',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
-                    color: Color.fromRGBO(0, 39, 76, 1)),
+              Divider(
+                color: Colors.black,
               ),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: _submitDate,
+                child: Text(
+                  'Add transaction',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                      color: Color.fromRGBO(0, 39, 76, 1)),
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+            ],
+          ),
         ),
       ),
     );
