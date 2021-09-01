@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,8 +47,8 @@ class MyApp extends StatelessWidget {
                 color: umYellow,
               ),
         ),
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber)
-            .copyWith(secondary: umBlue),
+        colorScheme:
+            ColorScheme.fromSwatch(primarySwatch: Colors.amber).copyWith(secondary: umBlue),
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -93,10 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTrans(
-      String transTitle, double transAmount, DateTime chosenDate) {
-    final newTrans =
-        Transactions(_trans.length, transTitle, transAmount, chosenDate);
+  void _addNewTrans(String transTitle, double transAmount, DateTime chosenDate) {
+    final newTrans = Transactions(_trans.length, transTitle, transAmount, chosenDate);
 
     setState(() {
       _trans.add(newTrans);
@@ -131,30 +131,62 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //short cut for using MediaQuery.of(context)
+    MediaQueryData queryData = MediaQuery.of(context);
     //show how to know the mobile's orientation
-    bool _isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    bool _isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
 
-    final appBar = AppBar(
-      title: Text(
-        'Personal Expenses',
-        textAlign: TextAlign.right,
-        style: TextStyle(
-          fontFamily: 'OpenSans',
-          color: umYellow,
-          fontWeight: FontWeight.bold,
-          fontSize: 26.0,
-        ),
-      ),
-      actions: [
-        IconButton(
-            onPressed: () => _startAddNewTrans(context),
-            icon: Icon(
-              Icons.add,
-              size: 28.0,
-            )),
-      ],
-    );
+    //customized appBar based on platform
+    //In order to use preferredSize method
+    //first cast everything in the ternary expression as PreferredSizeWidget,
+    // then cast the appBar as ObstructingPreferredSizeWidget in the navigationBar section.
+    final PreferredSizeWidget appBar = (Platform.isIOS
+        ? CupertinoNavigationBar(
+            // padding: EdgeInsetsDirectional.only(bottom: MediaQuery.of(context).size.height * 0.05),
+            backgroundColor: umBlue,
+            middle: Text(
+              'Personal Expenses',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontFamily: 'OpenSans',
+                color: umYellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 26.0,
+              ),
+            ),
+            //because cupertino app bar doesnt have actions
+            //so we create it by ourself by adding GestureDetector
+            trailing: Row(
+              //use this to set the appBar size as small as it needs
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () => _startAddNewTrans(context),
+                  child: Icon(CupertinoIcons.add, color: umYellow),
+                )
+              ],
+            ),
+          )
+        : AppBar(
+            title: Text(
+              'Personal Expenses',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontFamily: 'OpenSans',
+                color: umYellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 26.0,
+              ),
+            ),
+            actions: [
+              IconButton(
+                  onPressed: () => _startAddNewTrans(context),
+                  icon: Icon(
+                    Icons.add,
+                    size: 28.0,
+                  )),
+            ],
+          )) as PreferredSizeWidget;
 
     Widget _transList() {
       return Container(
@@ -178,19 +210,10 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Chart(_recentTrans));
     }
 
-    return Scaffold(
-      appBar: appBar,
-      //used to change the float button location
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.add,
-          color: umYellow,
-          size: 30,
-        ),
-        onPressed: () => _startAddNewTrans(context),
-      ),
-      body: SingleChildScrollView(
+    //SafeArea: simple make sure that everything is positioned within the boundaries or move down/up
+    // to make sure all the widget in the safeArea is presented on the screen.
+    final _pageBody = SafeArea(
+      child: SingleChildScrollView(
         // Single scroll view fixes the out of screen bound error
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.start,
@@ -208,7 +231,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextStyle(
                         fontFamily: 'QuickSand',
                         color: umBlue,
-                        fontSize: 24),
+                        fontSize: 24,
+                        //used to remove the double yellow line without cupertino material scaffold
+                        decoration: TextDecoration.none),
                   ),
                   Switch.adaptive(
                       value: _showChart,
@@ -219,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             if (_isLandscape)
-              //showChart == true, show the chart only
+              //when showChart == true, show the chart only
               _showChart ? _chartBar(0.7) : _transList(),
             // Card(
             //   child: Container(
@@ -236,7 +261,34 @@ class _MyHomePageState extends State<MyHomePage> {
             if (!_isLandscape) _transList(),
           ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
+
+    //customized appBar based on platform
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            //the same as Scaffold(body)
+            child: _pageBody,
+            //the same as Scaffold(appBar), in order to use preferredSize method
+            //first cast everything in the ternary expression as PreferredSizeWidget,
+            // then cast the appBar as ObstructingPreferredSizeWidget in the navigationBar section.
+            navigationBar: appBar as ObstructingPreferredSizeWidget,
+          )
+        : Scaffold(
+            appBar: appBar,
+            //used to change the float button location
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: Platform.isIOS
+                ? null
+                : FloatingActionButton(
+                    child: Icon(
+                      Icons.add,
+                      color: umYellow,
+                      size: 30,
+                    ),
+                    onPressed: () => _startAddNewTrans(context),
+                  ),
+            body: _pageBody, // This trailing comma makes auto-formatting nicer for build methods.
+          );
   }
 }

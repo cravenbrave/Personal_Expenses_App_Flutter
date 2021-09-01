@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:personal_expenses_app/widgets/adaptive_flat_button.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addNewTrans;
@@ -26,9 +29,7 @@ class _NewTransactionState extends State<NewTransaction> {
     final inputAmount = double.parse(_amountController.text);
 
     //if any content is wrong, return nothing as well
-    if (inputTitle.isEmpty ||
-        inputAmount <= 0 ||
-        _selectedDate == DateTime.utc(2000)) {
+    if (inputTitle.isEmpty || inputAmount <= 0 || _selectedDate == DateTime.utc(2000)) {
       return;
     }
 
@@ -51,11 +52,12 @@ class _NewTransactionState extends State<NewTransaction> {
         .then((pickedDate) {
       if (pickedDate == null) {
         return;
+      } else {
+        setState(() {
+          _selectedDate = pickedDate;
+        });
       }
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-    });
+        });
   }
 
   @override
@@ -64,7 +66,8 @@ class _NewTransactionState extends State<NewTransaction> {
       child: Card(
         elevation: 4.0,
         child: Container(
-          padding: EdgeInsets.only(left: 10, top: 10, right: 10, bottom: MediaQuery.of(context).viewInsets.bottom + 10),
+          padding: EdgeInsets.only(
+              left: 10, top: 10, right: 10, bottom: MediaQuery.of(context).viewInsets.bottom + 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -104,40 +107,19 @@ class _NewTransactionState extends State<NewTransaction> {
                         fontFamily: 'Quicksand',
                       ),
                     ),
-                    _selectedDate == DateTime.utc(2000)
-                        ? Text(
-                            'No date selected',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromRGBO(0, 39, 76, 1),
-                              fontSize: 20.0,
-                              fontFamily: 'Quicksand',
-                            ),
-                          )
-                        : Text(
-                            DateFormat.yMMMMEEEEd().format(_selectedDate),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromRGBO(0, 39, 76, 1),
-                              fontSize: 20.0,
-                              fontFamily: 'Quicksand',
-                            ),
-                          ),
-                    Expanded(
-                      child: SizedBox(),
-                    ),
-                    ElevatedButton(
-                      onPressed: _datePicker,
-                      child: Text(
-                        'Add',
+                    if (_selectedDate != DateTime.utc(2000))
+                      Text(
+                        DateFormat.yMMMMEEEEd().format(_selectedDate),
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
                           color: Color.fromRGBO(0, 39, 76, 1),
-                          fontSize: 18.0,
+                          fontSize: 20.0,
                           fontFamily: 'Quicksand',
                         ),
                       ),
-                    )
+                    Expanded(
+                      child: SizedBox(),
+                    ),
+                    AdaptiveFlatButton('Add date', _datePicker),
                   ],
                 ),
               ),
@@ -149,6 +131,7 @@ class _NewTransactionState extends State<NewTransaction> {
                 child: Text(
                   'Add transaction',
                   style: TextStyle(
+                      fontFamily: 'QuickSand',
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
                       color: Color.fromRGBO(0, 39, 76, 1)),
