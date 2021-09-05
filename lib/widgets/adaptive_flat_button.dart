@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 class AdaptiveFlatButton extends StatelessWidget {
   final String buttonName;
   final VoidCallback onTapped;
-
   AdaptiveFlatButton(this.buttonName, this.onTapped);
 
   @override

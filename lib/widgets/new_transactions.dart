@@ -29,7 +29,9 @@ class _NewTransactionState extends State<NewTransaction> {
     final inputAmount = double.parse(_amountController.text);
 
     //if any content is wrong, return nothing as well
-    if (inputTitle.isEmpty || inputAmount <= 0 || _selectedDate == DateTime.utc(2000)) {
+    if (inputTitle.isEmpty ||
+        inputAmount <= 0 ||
+        _selectedDate == DateTime.utc(2000)) {
       return;
     }
 
@@ -43,7 +45,7 @@ class _NewTransactionState extends State<NewTransaction> {
     Navigator.of(context).pop();
   }
 
-  void _datePicker() {
+  void _androidDatePicker() {
     showDatePicker(
             context: context,
             initialDate: DateTime.now(),
@@ -57,17 +59,70 @@ class _NewTransactionState extends State<NewTransaction> {
           _selectedDate = pickedDate;
         });
       }
-        });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    void _iosDatePicker() {
+      // showCupertinoModalPopup is a built-in function of the cupertino library
+      showCupertinoModalPopup(
+          context: context,
+          builder: (_) => Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                color: Color.fromARGB(255, 255, 255, 255),
+                child: Column(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      child: CupertinoDatePicker(
+                        mode: CupertinoDatePickerMode.date,
+                          initialDateTime: DateTime.now(),
+                          minimumYear: 2020,
+                          maximumDate: DateTime.now(),
+                          onDateTimeChanged: (val) {
+                            setState(() {
+                              _selectedDate = val;
+                            });
+                          }),
+                    ),
+
+                    // Close the modal
+                    Row(
+                      children:[
+                        CupertinoButton(
+                        child: Text('OK', style: TextStyle(fontSize: 20)),
+                        onPressed: () {
+                          if (_selectedDate == DateTime.utc(2000)) {
+                            setState(() {
+                              _selectedDate = DateTime.now();
+                            });
+                          }
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                        Spacer(),
+                        CupertinoButton(child: Text('Cancel', style: TextStyle(fontSize: 20)), onPressed: () {
+                          setState(() {
+                            _selectedDate = DateTime.utc(2000);
+                          });
+                          Navigator.of(context).pop();
+                        }),
+                    ]),
+                  ],
+                ),
+              ));
+    }
+
     return SingleChildScrollView(
       child: Card(
         elevation: 4.0,
         child: Container(
           padding: EdgeInsets.only(
-              left: 10, top: 10, right: 10, bottom: MediaQuery.of(context).viewInsets.bottom + 10),
+              left: 10,
+              top: 10,
+              right: 10,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -108,18 +163,21 @@ class _NewTransactionState extends State<NewTransaction> {
                       ),
                     ),
                     if (_selectedDate != DateTime.utc(2000))
-                      Text(
-                        DateFormat.yMMMMEEEEd().format(_selectedDate),
-                        style: TextStyle(
-                          color: Color.fromRGBO(0, 39, 76, 1),
-                          fontSize: 20.0,
-                          fontFamily: 'Quicksand',
+                      FittedBox(
+                        child: Text(
+                          DateFormat.yMMMMd().format(_selectedDate),
+                          style: TextStyle(
+                            color: Color.fromRGBO(0, 39, 76, 1),
+                            fontSize: 20.0,
+                            fontFamily: 'Quicksand',
+                          ),
                         ),
                       ),
                     Expanded(
                       child: SizedBox(),
                     ),
-                    AdaptiveFlatButton('Add date', _datePicker),
+                    AdaptiveFlatButton('Add date',
+                        Platform.isIOS ? _iosDatePicker : _androidDatePicker),
                   ],
                 ),
               ),
