@@ -5,7 +5,10 @@ class ChartBar extends StatelessWidget {
   final double amount;
   final double percentOfTotal;
 
-  ChartBar(this.label, this.amount, this.percentOfTotal);
+  //add const before this class, once this class is created, it is unchanged
+  //requirement: all parameters of this class must be final: unchangeable
+  //goal: improve the app efficiency
+  const ChartBar(this.label, this.amount, this.percentOfTotal);
 
   @override
   Widget build(BuildContext context) {
