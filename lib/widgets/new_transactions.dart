@@ -19,6 +19,10 @@ class _NewTransactionState extends State<NewTransaction> {
   final _amountController = TextEditingController();
   DateTime _selectedDate = DateTime.utc(2000);
 
+  @override
+  void initState() {
+    super.initState();
+  }
   void _submitDate() {
     //nothing happened when is empty, without send an error
     if (_amountController.text.isEmpty) {

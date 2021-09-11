@@ -72,8 +72,9 @@ class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
+//with mix in class, not fully inherit the class, but partially
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool _showChart = false;
   final List<Transactions> _trans = [
     // Transactions(6, 'Foodfghjhgghjghdfewrwerwghjhj', 156776.0, DateTime.now()),
@@ -84,6 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // Transactions(5, 'Take-out', 32.3, DateTime.now()),
   ];
 
+  //always called when the app life cycle changed
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //
+  // }
   //only returns the recent 7 days trans to chart
   List<Transactions> get _recentTrans {
     return _trans.where((tx) {
